@@ -66,11 +66,14 @@ test('geçersiz bir mail girildiğinde "email geçerli bir email adresi olmalıd
 
 test('soyad girilmeden gönderilirse "soyad gereklidir." mesajı render ediliyor', async () => {
   render(<IletisimFormu />);
-  const soyadInput = screen.getByLabelText("Soyad*");
-  userEvent.type(soyadInput, "");
-
-  const hataMesajı = screen.queryAllByTestId("error");
-  expect(hataMesajı).toHaveTextContent("soyad gereklidir.");
+  const adInput = screen.getByLabelText("Ad*");
+  userEvent.type(adInput, "Zübeyde");
+  const email = screen.getByLabelText(/Email*/i);
+  userEvent.type(email, "ornek@gmail.com");
+  const button = screen.getByRole("button", { name: /Gönder/i });
+  userEvent.click(button);
+  const errorMessage = await screen.findByTestId("error");
+  expect(errorMessage).toHaveTextContent("Hata: soyad gereklidir.");
 });
 
 test("ad,soyad, email render ediliyor. mesaj bölümü doldurulmadığında hata mesajı render edilmiyor.", async () => {
